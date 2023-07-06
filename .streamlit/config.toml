@@ -1,0 +1,16 @@
+[runner]
+magicEnabled = true
+
+[server]
+runOnSave = true
+
+[theme]
+base="dark"
+primaryColor="#0079c0"
+font="sans serif"
+
+[deprecation]
+showPyplotGlobalUse = false
+
+
+
