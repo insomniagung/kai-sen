@@ -63,6 +63,22 @@ def green_alert(str):
         st.empty()           
 
 # --- css ---
+
+def add_background():
+    image_file = 'img/bg_images.png'
+    with open(image_file, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: url(data:image/{"png"};base64,{encoded_string.decode()});
+        background-size: cover
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
     
 st.markdown("""
     <style>
@@ -79,23 +95,6 @@ st.markdown("""
 unsafe_allow_html=True)
 
 def main():
-    @st.cache_data(show_spinner=False)
-    def add_background():
-        image_file = 'img/bg_images.png'
-        with open(image_file, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-        st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url(data:image/{"png"};base64,{encoded_string.decode()});
-            background-size: cover
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-        )
-
     add_background()
 
     # --- authenticator ---    
