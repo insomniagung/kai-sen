@@ -374,8 +374,8 @@ def analysis_page():
             content_tfidf = len(df['tokenizing'])
 
             df['tokenizing'] = df['tokenizing'].astype(str)
-            # tf_idf = TfidfVectorizer(max_features=content_tfidf, min_df=5, max_df=0.8)
-            tf_idf = TfidfVectorizer()
+            tf_idf = TfidfVectorizer(max_features=content_tfidf, min_df=5, max_df=0.8)
+            #tf_idf = TfidfVectorizer()
 
             review = df['tokenizing'].values.tolist()
 
