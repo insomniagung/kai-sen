@@ -422,7 +422,7 @@ def analysis_page():
         ])
 
         with tabPisahData:
-            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=0)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.9, random_state=0)
             all_data = len(y)
             data_train = len(y_train)
             data_test = len(y_test)
