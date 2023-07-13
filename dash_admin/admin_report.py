@@ -1,7 +1,5 @@
 import streamlit as st
 import time
-import pdfkit as pdf
-import os
 session = st.session_state
 import pandas as pd
 import datetime
