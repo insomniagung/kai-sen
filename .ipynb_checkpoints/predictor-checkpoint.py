@@ -5,14 +5,6 @@ import pickle
 import time
 import pandas as pd
 
-# from analysis import casefolding, cleansing, lemmatize, stemming
-# from analysis import convert_slangword, remove_stopword, remove_unwanted_words
-# from analysis import remove_short_words, tokenizing
-
-# from preprocess_predictor import casefolding, cleansing, stemming
-# from preprocess_predictor import convert_slangword, remove_stopword, remove_unwanted_words
-# from preprocess_predictor import remove_short_words, tokenizing
-
 import preprocess_predictor as prep
 
 with gzip.open('rfc.pkl.gz', 'rb') as file:
@@ -31,11 +23,6 @@ def predict_sentiment(sample_review):
     else:
         sample_review2 = sample_review1
     
-    # if session['opt_lemmatize'] == 'Ya':
-    #     sample_review3 = lemmatize(sample_review2)
-    #     session['txtlemmatize'] = sample_review3
-    # else:
-    #     sample_review3 = sample_review2
     sample_review3 = sample_review2
         
     if session['opt_stemming'] == 'Ya':    
@@ -86,13 +73,13 @@ def predictor_page():
              border-radius: 5px; padding: 9px 22px;">
              Input Sentiment :</span>
          ''', unsafe_allow_html = True)
-        sample_review = st.text_area("Masukkan Sentiment:", height=200, placeholder='''
+        sample_review = st.text_area("Input Sentiment:", height=200, placeholder='''
         "Sangat membantu dalam pembelian tiket, namun masih harus diperbaiki kecepatannya."
         ''', label_visibility="collapsed")
         session['sample_review'] = sample_review
     
     #SIDEBAR
-    with st.sidebar.expander("Opsi Text Preprocessing: ", expanded=True):
+    with st.sidebar.expander("Opsi Preprocessing: ", expanded=True):
         # Casefolding
         st.markdown(f'''
              <span style="text-decoration: none;
@@ -121,22 +108,7 @@ def predictor_page():
             session['opt_cleansing'] = opt_cleansing
         else:
             session['opt_cleansing'] = opt_cleansing
-        
-        # st.write("")
-        # # Lemmatize
-        # st.markdown(f'''
-        #      <span style="text-decoration: none;
-        #      font-family: 'Open Sans'; font-size: 12px;
-        #      color: white; background-color: #7b7d7b; 
-        #      border-radius: 20px; padding: 7px 13px;">
-        #      <b>Lemmatize?</b></span>
-        #  ''', unsafe_allow_html = True, help="_Memotong/menghapus kata imbuhan menjadi kata dasar sesuai KBBI (kamus bahasa)_")
-        # opt_lemmatize = st.radio("Lemmatize?", options=('Tidak', 'Ya'), index=1, horizontal=True, label_visibility="collapsed")
-        # if opt_lemmatize:
-        #     session['opt_lemmatize'] = opt_lemmatize
-        # else:
-        #     session['opt_lemmatize'] = opt_lemmatize
-        
+
         st.write("")
         # Stemming
         st.markdown(f'''
@@ -160,7 +132,7 @@ def predictor_page():
              color: black; background-color: #ffe303; 
              border-radius: 20px; padding: 7px 13px;">
              <b>Convert Slangword?</b></span>
-         ''', unsafe_allow_html = True, help="_Mengubah kata alay/slang menjadi kata formal_")
+         ''', unsafe_allow_html = True, help="_Mengubah kata non-formal menjadi kata formal_")
         opt_convert_slangword = st.radio("Convert Slangword?", options=('Tidak', 'Ya'), index=1, horizontal=True, label_visibility="collapsed")
         if opt_convert_slangword:
             session['opt_convert_slangword'] = opt_convert_slangword
@@ -274,13 +246,13 @@ def predictor_page():
                     
                     st.write("")
 
-                    if (opt_casefolding == 'Ya' or opt_cleansing =='Ya' or opt_lemmatize =='Ya' or 
-                        opt_stemming =='Ya' or opt_convert_slangword =='Ya' or opt_remove_stopword =='Ya' 
+                    if (opt_casefolding == 'Ya' or opt_cleansing =='Ya' or opt_stemming =='Ya' 
+                        or opt_convert_slangword =='Ya' or opt_remove_stopword =='Ya' 
                         or opt_remove_unwanted_words =='Ya' or opt_remove_short_words =='Ya'
                         # or opt_tokenizing =='Ya'
                        ) :
 
-                        with st.expander("Show / Hide Text Preprocessing", expanded=False):
+                        with st.expander("Tahap Preprocessing", expanded=True):
                             if opt_casefolding == 'Ya':
                                 st.write(f'''
                                      <p style="text-decoration: none;
@@ -302,17 +274,6 @@ def predictor_page():
                                  ''', unsafe_allow_html = True)
                             else:
                                 st.empty()
-
-                            # if opt_lemmatize == 'Ya':
-                            #     st.write(f'''
-                            #          <p style="text-decoration: none;
-                            #          font-family: 'Open Sans'; font-size: 13px;
-                            #          color: white; background-color: #7b7d7b;
-                            #          border-radius: 5px; padding: 9px 22px;">
-                            #          Lemmatize : <b>{session['txtlemmatize']}</b></p>
-                            #      ''', unsafe_allow_html = True)
-                            # else:
-                            #     st.empty()
 
                             if opt_stemming == 'Ya':
                                 st.write(f'''
@@ -382,13 +343,13 @@ def predictor_page():
                     
                     st.write("")
 
-                    if (opt_casefolding == 'Ya' or opt_cleansing =='Ya' or opt_lemmatize =='Ya' or 
-                        opt_stemming =='Ya' or opt_convert_slangword =='Ya' or opt_remove_stopword =='Ya' 
+                    if (opt_casefolding == 'Ya' or opt_cleansing =='Ya' or opt_stemming =='Ya' 
+                        or opt_convert_slangword =='Ya' or opt_remove_stopword =='Ya' 
                         or opt_remove_unwanted_words =='Ya' or opt_remove_short_words =='Ya' 
                         # or opt_tokenizing =='Ya'
                        ) :
 
-                        with st.expander("Show / Hide Text Preprocessing", expanded=False):
+                        with st.expander("Tahap Preprocessing", expanded=True):
                             if opt_casefolding == 'Ya':
                                 st.write(f'''
                                      <p style="text-decoration: none;

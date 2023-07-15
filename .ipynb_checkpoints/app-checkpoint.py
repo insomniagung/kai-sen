@@ -4,10 +4,10 @@ st.set_page_config(
     page_title="Kai Sen App",
     page_icon="🚄",
     initial_sidebar_state="expanded",
-    # menu_items={
-    #     'Get Help': 'https://github.com/Insomniagung',
-    #     # 'About': "Aplikasi Sentimen Analisis"
-    # }
+    menu_items={
+        'Get Help': 'https://github.com/Insomniagung',
+        'About': "Aplikasi Sentimen Analisis oleh Agung Gunawan."
+    }
 )
 
 session = st.session_state 
@@ -19,12 +19,10 @@ import base64
 import predictor as pr
 from dash_admin.admin_home import admin_home_page
 from dash_admin.admin_analysis import admin_analysis_page
-# from dash_admin.admin_predictor import admin_predictor_page
 from dash_admin.admin_report import admin_report_page
 from dash_admin.admin_database import admin_database_page
 
 from dash_user.user_home import user_home_page
-# from dash_user.user_predictor import user_predictor_page
 from dash_user.user_database import user_database_page
 
 from deta import Deta
@@ -102,21 +100,14 @@ def main():
     usernames = [user["key"] for user in users]
     names = [users["name"] for users in users]
     passwords = [user["password"] for user in users]
-    # roles = [user["role"] for user in users]
-    # username = ""
 
     credentials = {"usernames":{}}
 
-    # for un, name, pw, rl in zip(usernames, names, passwords, roles):
-    #     user_dict = {"name": name, "password": pw, "role": rl}
-    #     credentials["usernames"].update({un: user_dict})
     for un, name, pw in zip(usernames, names, passwords):
         user_dict = {"name": name, "password": pw}
         credentials["usernames"].update({un: user_dict})
 
     authenticator = stauth.Authenticate(credentials, "login_cookie", "key_login", cookie_expiry_days=7)
-    # st.info("Silakan isi form dengan credentials yang benar.", icon="ℹ️")
-    # name_auth, authenticator_status, username = authenticator.login("Login","main")
     
     authenticator._check_cookie()
     if not session['authentication_status']:

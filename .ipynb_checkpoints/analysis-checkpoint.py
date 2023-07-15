@@ -376,11 +376,11 @@ def analysis_page():
                 st.pyplot(figNeg)
 
         with tabTFidf:
-            content_tfidf = len(df['tokenizing'])
-
+            # content_tfidf = len(df['tokenizing'])
+            df = df.copy()
             df['tokenizing'] = df['tokenizing'].astype(str)
-            tf_idf = TfidfVectorizer(max_features=content_tfidf, min_df=5, max_df=0.8)
-            #tf_idf = TfidfVectorizer()
+            # tf_idf = TfidfVectorizer(max_features=content_tfidf, min_df=5, max_df=0.8)
+            tf_idf = TfidfVectorizer()
 
             review = df['tokenizing'].values.tolist()
 
@@ -392,8 +392,8 @@ def analysis_page():
             y = df['polarity']
             
             with st.expander("Output Pembobotan Kata Dengan TF-IDF", expanded=True):
-                st.write("Max features:", content_tfidf)
-                st.write("")
+                # st.write("Max features:", content_tfidf)
+                # st.write("")
                 st.text(X[0:2])
 
         st.divider()
@@ -439,7 +439,16 @@ def analysis_page():
                 st.write("Total Data Test : ", data_test)
 
         with tabRFC:
-            rfc = RandomForestClassifier()
+            rfc = RandomForestClassifier(
+                n_estimators=100, 
+                criterion = "gini",
+                max_depth=None,
+                min_samples_split=2,
+                min_samples_leaf=1,
+                bootstrap=True,
+                n_jobs=-1, 
+                oob_score=True)
+            
             rfc.fit(X_train, y_train)
             y_pred = rfc.predict(X_test)
             predict = rfc.predict(X_test)

@@ -25,8 +25,7 @@ def convert_excel(df):
     return processed_data
 
 def admin_report_page():
-    st.title("Report", 
-             help="Halaman laporan dari dataset.")
+    st.title("Report", help="Halaman laporan dari dataset.")
     st.divider()
     
     df_report = pd.read_csv("data/ulasan_tiket_kai_access.csv")
@@ -90,6 +89,7 @@ def admin_report_page():
 
         # mengubah format
         # selected_columns['at'] = selected_columns['at'].dt.strftime('%d %B, %Y')
+        selected_columns = selected_columns.copy()
         selected_columns['at'] = selected_columns['at'].dt.strftime('%d-%m-%Y')
 
         selected_columns.reset_index(drop=True, inplace=True)
