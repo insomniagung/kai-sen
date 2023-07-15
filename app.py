@@ -1,5 +1,4 @@
 import streamlit as st
-session = st.session_state 
 
 st.set_page_config(
     page_title="Kai Sen App",
@@ -110,7 +109,7 @@ def main():
     authenticator = stauth.Authenticate(credentials, "login_cookie", "key_login", cookie_expiry_days=7)
     
     authenticator._check_cookie()
-    if not session['authentication_status']:    
+    if not st.session_state['authentication_status']:    
         menu = ["Login", "Register"]
         selected = st.radio(label = "&nbsp;&nbsp; **FORM** ", 
                                 options = menu, 
@@ -120,9 +119,9 @@ def main():
         
         if selected == "Login":
             name_auth, authentication_status, username_auth = authenticator.login("Login", "main")
-            session['name'] = name_auth
-            session['authentication_status'] = authentication_status
-            session['username'] = username_auth
+            st.session_state['name'] = name_auth
+            st.session_state['authentication_status'] = authentication_status
+            st.session_state['username'] = username_auth
             
             if authentication_status == False:
                 st.error("Username atau password salah. Mohon isi kolom dengan benar.")
@@ -163,10 +162,10 @@ def main():
     # --- main pages ---
     else:
         authenticator.logout("Logout", "sidebar")
-        username = session['username']
+        username = st.session_state['username']
         
         role = get_user(username).get('role')
-        session['role'] = role
+        st.session_state['role'] = role
         
         # ROLE ADMIN
         if role == "admin":
@@ -232,7 +231,7 @@ def main():
      ''', unsafe_allow_html = True)
     
     # with st.expander("Session"):
-    #         session
+    #         st.session_state
             
 if __name__ == "__main__":
     main()
