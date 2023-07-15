@@ -1,5 +1,5 @@
 import streamlit as st
-session = st.session_state
+# session = st.session_state
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -13,7 +13,7 @@ from unidecode import unidecode
 
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
-nltk.download('punkt')
+nltk.download('punkt', quiet=True)
 from nltk.tokenize import word_tokenize
 from nlp_id import StopWord, Tokenizer
 
@@ -46,15 +46,14 @@ def analysis_page():
         ])
 
         with tabMD:
-            session['df_total'] = len(df)
+            df_total = len(df)
             with st.expander("Dataframe", expanded=True):
-                st.write("Jumlah data: ", session['df_total'])
+                st.write("Jumlah data: ", df_total)
                 st.write("")
                 st.dataframe(df, use_container_width=True)
 
         with tabMKF:
-            session['df'] = df.drop(columns=df.columns.difference(['content']))
-            df = session['df']
+            df = df.drop(columns=df.columns.difference(['content']))
 
             value_null = df.content.isnull().sum()
             value_counts = df.content.str.contains('tiket', case=False).sum()
@@ -200,17 +199,12 @@ def analysis_page():
         # Dictionary kata positif yang digunakan :
         df_positive = pd.read_csv(
             'https://raw.githubusercontent.com/SadamMahendra/ID-NegPos/main/positive.txt', sep='\t')
-        if 'df_positive' not in session:
-            session['df_positive'] = df_positive
-        df_positive = session['df_positive']
+        
         list_positive = list(df_positive.iloc[::, 0])
 
         # Dictionary kata negatif yang digunakan :
         df_negative = pd.read_csv(
             'https://raw.githubusercontent.com/SadamMahendra/ID-NegPos/main/negative.txt', sep='\t')
-        if 'df_negative' not in session:
-            session['df_negative'] = df_negative
-        df_negative = session['df_negative']
         list_negative = list(df_negative.iloc[::, 0])
 
         def sentiment_analysis_dictionary_id(text):
@@ -350,15 +344,12 @@ def analysis_page():
             negative_word_counts = Counter(negative_words)
 
             mask_pos = np.array(Image.open("img/train_pos.jpg"))
-            session['mask_pos'] = mask_pos
-
             mask_neg = np.array(Image.open("img/train_neg.jpg"))
-            session['mask_neg'] = mask_neg
 
-            positive_wordcloud = WordCloud(width=800, height=600, mask=session['mask_pos'], max_words=2000,
+            positive_wordcloud = WordCloud(width=800, height=600, mask=mask_pos, max_words=2000,
                                            background_color='black').generate_from_frequencies(positive_word_counts)
 
-            negative_wordcloud = WordCloud(width=800, height=600, mask=session['mask_neg'], max_words=2000,
+            negative_wordcloud = WordCloud(width=800, height=600, mask=mask_neg, max_words=2000,
                                            background_color='black').generate_from_frequencies(negative_word_counts)
 
             figPos, axPos = plt.subplots(figsize=(12, 8))
@@ -376,17 +367,14 @@ def analysis_page():
                 st.pyplot(figNeg)
 
         with tabTFidf:
-            # content_tfidf = len(df['tokenizing'])
             df = df.copy()
             df['tokenizing'] = df['tokenizing'].astype(str)
-            # tf_idf = TfidfVectorizer(max_features=content_tfidf, min_df=5, max_df=0.8)
+            
             tf_idf = TfidfVectorizer()
 
             review = df['tokenizing'].values.tolist()
 
             tf_idf_vector = tf_idf.fit(review)
-            session['tf_idf_vector'] = tf_idf_vector
-            tf_idf_vector = session['tf_idf_vector']
 
             X = tf_idf_vector.transform(review)
             y = df['polarity']

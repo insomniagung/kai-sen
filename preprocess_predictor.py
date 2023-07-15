@@ -2,6 +2,7 @@ import streamlit as st
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
+
 import pandas as pd
 import numpy as np
 import re
@@ -9,10 +10,10 @@ from unidecode import unidecode
 
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
-nltk.download('punkt')
+nltk.download('punkt', quiet=True)
 from nltk.tokenize import word_tokenize
 from nlp_id import StopWord, Tokenizer    
-    
+   
 # 2. Data Cleaning
 def casefolding(text):
     text = text.lower()

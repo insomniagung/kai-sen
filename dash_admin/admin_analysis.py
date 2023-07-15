@@ -6,7 +6,7 @@ def admin_analysis_page():
     #sidebar
     @st.cache_data()
     def section():
-        with st.sidebar.expander("Section", expanded=True):
+        with st.sidebar.expander("Data Preparation", expanded=True):
             st.write("")
             st.write('''
                      <a href="#data-checking" style="text-decoration: none;

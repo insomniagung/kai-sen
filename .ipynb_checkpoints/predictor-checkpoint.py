@@ -1,15 +1,18 @@
 import streamlit as st
 session = st.session_state
-import gzip
+# import gzip
 import pickle
 import time
 import pandas as pd
 
 import preprocess_predictor as prep
 
-with gzip.open('rfc.pkl.gz', 'rb') as file:
-    rfc, tf_idf_vector = pickle.load(file)
+# with gzip.open('rfc.pkl.gz', 'rb') as file:
+#     rfc, tf_idf_vector = pickle.load(file)
 
+with open('rfc.pkl', 'rb') as file:
+    rfc, tf_idf_vector = pickle.load(file)
+    
 def predict_sentiment(sample_review):
     if session['opt_casefolding'] == 'Ya':
         sample_review1 = prep.casefolding(sample_review)
@@ -79,7 +82,8 @@ def predictor_page():
         session['sample_review'] = sample_review
     
     #SIDEBAR
-    with st.sidebar.expander("Opsi Preprocessing: ", expanded=True):
+    with st.sidebar.expander("Opsi Preprocessing ", expanded=True):
+        st.write("")
         # Casefolding
         st.markdown(f'''
              <span style="text-decoration: none;
@@ -183,9 +187,13 @@ def predictor_page():
             session['opt_remove_short_words'] = opt_remove_short_words
         else:
             session['opt_remove_short_words'] = opt_remove_short_words
+    
+    with st.sidebar:
+        st.write("")
+        st.write("")
+        st.write("")
         
     st.write("")
-    
     if st.button("Prediksi"):
         
         if sample_review:

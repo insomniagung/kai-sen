@@ -1,4 +1,5 @@
 import streamlit as st
+session = st.session_state 
 
 st.set_page_config(
     page_title="Kai Sen App",
@@ -10,7 +11,6 @@ st.set_page_config(
     }
 )
 
-session = st.session_state 
 import time
 import streamlit_authenticator as stauth
 import base64
@@ -110,8 +110,7 @@ def main():
     authenticator = stauth.Authenticate(credentials, "login_cookie", "key_login", cookie_expiry_days=7)
     
     authenticator._check_cookie()
-    if not session['authentication_status']:
-    # if 'authentication_status' not in session:    
+    if not session['authentication_status']:    
         menu = ["Login", "Register"]
         selected = st.radio(label = "&nbsp;&nbsp; **FORM** ", 
                                 options = menu, 
@@ -121,9 +120,9 @@ def main():
         
         if selected == "Login":
             name_auth, authentication_status, username_auth = authenticator.login("Login", "main")
-            st.session_state['name'] = name_auth
-            st.session_state['authentication_status'] = authentication_status
-            st.session_state['username'] = username_auth
+            session['name'] = name_auth
+            session['authentication_status'] = authentication_status
+            session['username'] = username_auth
             
             if authentication_status == False:
                 st.error("Username atau password salah. Mohon isi kolom dengan benar.")
