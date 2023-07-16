@@ -9,7 +9,7 @@ from io import BytesIO
 
 @st.cache_data(show_spinner=False)
 def convert_csv(df):
-    return df.to_csv().encode('utf-8')
+    return df.to_csv(index=False)
 
 @st.cache_data(show_spinner=False)
 def convert_excel(df):
@@ -23,15 +23,18 @@ def convert_excel(df):
     writer.close()
     processed_data = output.getvalue()
     return processed_data
-
+    
 def admin_report_page():
+    
+    @st.cache_data(show_spinner=False)
+    def df_report():
+        df_report = pd.read_csv("data/ulasan_tiket_kai_access.csv")
+        return df_report
+        
     st.title("Report", help="Halaman laporan dari dataset.")
     st.divider()
     
-    df_report = pd.read_csv("data/ulasan_tiket_kai_access.csv")
-    
-    session['df_report'] = df_report
-    df_report = session['df_report']
+    df_report = df_report()
     
     st.markdown(f'''
              <span style="text-decoration: none;
@@ -63,20 +66,15 @@ def admin_report_page():
         
     start_date = d1.strftime('%Y-%m-%d')
     IDstart_date = d1.strftime('%d %B %Y')
-    session['IDstart_date'] = IDstart_date
+    # session['IDstart_date'] = IDstart_date
     
     end_date = d2.strftime('%Y-%m-%d')
     IDend_date = d2.strftime('%d %B %Y')
-    session['IDend_date'] = IDend_date
+    # session['IDend_date'] = IDend_date
     
     end_date_plus = (d2 + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     
     with st.expander("Show Data", expanded=True):
-        
-        with st.spinner('Memproses...'):
-            st.empty()
-            time.sleep(1)
-
 
         # Convert the date to datetime64
         df_report['at'] = pd.to_datetime(df_report['at'], format='%Y-%m-%d')
@@ -105,26 +103,24 @@ def admin_report_page():
              Data dari <b>{IDstart_date}</b> sampai <b>{IDend_date}</b></span>
          ''', unsafe_allow_html = True)
 
-        session['selected_columns'] = selected_columns
-        selected_columns = session['selected_columns']
         st.dataframe(selected_columns, use_container_width=True, hide_index=False)
-
+        
+        kolom = ['content', 'at']
+        selected_columns = selected_columns.loc[:, kolom]
     with st.sidebar:
         with st.expander("Download", expanded=True):
             csv = convert_csv(selected_columns)
-            
             excels = convert_excel(selected_columns)
             
-            st.download_button(label = "🖨️ Download CSV", 
-                                  data = csv,
-                                  file_name = f"Report Data CSV ({session['IDstart_date']}) to ({session['IDend_date']}).csv", 
-                                  mime = 'text/csv')
+            st.download_button(label = "🖨️ Download CSV",
+                               data = csv, 
+                               file_name = f"Report Data CSV ({IDstart_date}) to ({IDend_date}).csv",
+                               mime = 'text/csv')
             
-            st.download_button(label = "🖨️ Download Excel", 
-                                  data = excels,
-                                  file_name = f"Report Data Excel ({session['IDstart_date']}) to ({session['IDend_date']}).xlsx", 
-                                  mime = 'text/xlsx')
-                
+            st.download_button(label = "🖨️ Download Excel",
+                               data = excels,
+                               file_name = f"Report Data Excel ({IDstart_date}) to ({IDend_date}).xlsx",
+                               mime = 'text/xlsx')
 
 hide_streamlit = """ <style> footer {visibility: hidden;} </style> """    
 st.markdown(hide_streamlit, unsafe_allow_html=True)             
