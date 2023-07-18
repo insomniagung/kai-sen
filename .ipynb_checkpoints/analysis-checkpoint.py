@@ -550,7 +550,7 @@ def analysis_page():
         csv = convert_df(df_convert)
 
         st.download_button(
-            "🖨️ Download DF Label (CSV)",
+            "🖨️ Download Data berlabel (CSV)",
             csv,
             "df_label_polarity.csv",
             "text/csv",
@@ -558,7 +558,7 @@ def analysis_page():
         )
         
         excels = convert_excel(df_convert)
-        st.download_button(label = "🖨️ Download DF Label (Excel)", 
+        st.download_button(label = "🖨️ Download Data berabel (Excel)", 
               data = excels,
               file_name = "df_label_polarity.xlsx", 
               mime = 'text/xlsx',
