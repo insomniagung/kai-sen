@@ -62,6 +62,7 @@ def admin_analysis_page():
     
     #main
     st.title("Sentiment Analysis KAI Access", help="Menampilkan sentiment analysis secara detail pada Ulasan KAI Access di Google Play Store.")
+    st.divider()
     
     section()
     analysis_page()

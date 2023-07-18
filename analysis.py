@@ -40,6 +40,7 @@ def analysis_page():
         
         # 1. Data Checking
         st.subheader("Data Checking :", anchor='data-checking')
+        st.markdown("_Melakukan pengecekan data, seperti nilai null dan memisahkan fitur yang akan digunakan._")
         tabMD, tabMKF= st.tabs([
             "&nbsp;&nbsp;&nbsp; **Menampilkan DataFrame** &nbsp;&nbsp;&nbsp;",
             "&nbsp;&nbsp;&nbsp; **Memilah & Cek Kondisi Fitur** &nbsp;&nbsp;&nbsp;",
@@ -47,6 +48,7 @@ def analysis_page():
 
         with tabMD:
             df_total = len(df)
+            
             with st.expander("Dataframe", expanded=True):
                 st.write("Jumlah data: ", df_total)
                 st.write("")
@@ -85,15 +87,18 @@ def analysis_page():
 
         with tabCasefolding:
             df['cleaning'] = df['content'].apply(casefolding)
+            st.markdown("_Proses melakukan konversi teks. Mengubah huruf besar menjadi huruf kecil, dan mengubah huruf aksen ke bentuk tanpa aksen yang setara (mis: huruf é menjadi e, huruf E menjadi e)._")
             with st.expander("Output Casefolding", expanded=True):
                 st.dataframe( df['cleaning'].head(11) , use_container_width=True)
 
         with tabCleansing:
             df['cleaning'] = df['cleaning'].apply(cleansing)
+            st.markdown("_Proses membersihkan atau membuang noise (angka, tanda baca, emoji, multi spasi, dan baris enter)_")
             with st.expander("Output Cleansing", expanded=True):
                 st.dataframe( df['cleaning'].head(11) , use_container_width=True)
 
         with tabHasilCleaning:
+            # st.markdown("_Hasil Cleaning pada Content._")
             with st.expander("Output Cleaning", expanded=True):
                 st.dataframe(df.head(11) , use_container_width=True)            
 
@@ -126,10 +131,12 @@ def analysis_page():
 
         with tabStem:
             df['normalize'] = df['cleaning'].apply(stemming)
+            st.markdown("_Proses menemukan kata dasar dengan menghilangkan semua imbuhan yang menyatu pada kata. Misalnya kata 'diperbaiki' akan diubah menjadi 'baik'._")
             with st.expander("Output Stemming", expanded=True):
                 st.dataframe( df['normalize'].head(11) , use_container_width=True)
 
         with tabSlang:
+            st.markdown("_Proses mengubah kata non-baku (slang) menjadi kata baku._")
             with st.expander("Kamus Kata Slang Word", expanded=True):
                 st.dataframe(kbba_dictionary, use_container_width=True)
 
@@ -172,16 +179,19 @@ def analysis_page():
 
         with tabStopword:
             df['removal'] = df['normalize'].apply(remove_stopword)
+            st.markdown("_Proses menghapus seluruh kata yang dianggap tidak memiliki makna. Seperti kata hubung 'yang', 'dan', 'dari'._")
             with st.expander("Output Stopwording", expanded=True):
                 st.dataframe(df['removal'].head(11) , use_container_width=True)
 
         with tabUnwanted:
+            st.markdown("_Proses membuat dictionary kata-kata yang kurang dianggap bermakna, lalu menghapus kata yang sama dari ulasan. Kata yang dianggap tidak bermakna yaitu seperti nama bulan dalam kalender._")
             df['removal'] = df['removal'].apply(remove_unwanted_words)
             with st.expander("Output Unwanted Word Removal", expanded=True):
                 st.dataframe(df['removal'].head(11) , use_container_width=True)
 
         with tabShortword:
             df['removal'] = df['removal'].apply(remove_short_words)
+            st.markdown("_Proses menghapus kata apapun yang kurang dari 3 karakter. Seperti kata 'di'._")
             with st.expander("Output Shortword Removal", expanded=True):
                 st.dataframe(df['removal'].head(11) , use_container_width=True)
 
@@ -236,16 +246,15 @@ def analysis_page():
             return score, polarity, result, positive_words, negative_words
 
         st.subheader("Tokenizing :", anchor="tokenizing")
-        tabSplitwords, tabLabeling, tabPie, tabWordcloud, tabTFidf = st.tabs([
+        tabSplitwords, tabLabeling, tabTFidf = st.tabs([
             "&nbsp;&nbsp;&nbsp; **Split Words** &nbsp;&nbsp;&nbsp;",
             "&nbsp;&nbsp;&nbsp; **Labeling** &nbsp;&nbsp;&nbsp;",
-            "&nbsp;&nbsp;&nbsp; **Pie Chart** &nbsp;&nbsp;&nbsp;",
-            "&nbsp;&nbsp;&nbsp; **Wordcloud** &nbsp;&nbsp;&nbsp;",
             "&nbsp;&nbsp;&nbsp; **TF-IDF** &nbsp;&nbsp;&nbsp;",
         ])
 
         with tabSplitwords:
             df['tokenizing'] = df['removal'].apply(tokenizing)
+            st.markdown("_Proses pemisahan kata pada tiap ulasan._")
             with st.expander("Output Split Words", expanded=True):
                 st.dataframe(df['tokenizing'].head(11) , use_container_width=True)
 
@@ -253,8 +262,8 @@ def analysis_page():
             df_positive_words = pd.DataFrame({'List Positive': list_positive})
             df_negative_words = pd.DataFrame({'List Negative': list_negative})
             df_dictionary = pd.concat([df_positive_words, df_negative_words], axis=1)
-
-            with st.expander("Output Dictionary Positif & Negative", expanded=True):
+            st.markdown("_Proses melakukan Labeling (positif & negatif) pada ulasan._")
+            with st.expander("Dictionary Positif & Negative", expanded=True):
                 st.dataframe(df_dictionary.head(100) , use_container_width=True)
 
             hasil = df['tokenizing'].apply(sentiment_analysis_dictionary_id)        
@@ -262,7 +271,7 @@ def analysis_page():
             df['polarity_score'] = hasil[0]
             df['polarity'] = hasil[1]
 
-            with st.expander("Process Polarity", expanded=True):
+            with st.expander("Hasil Polarity", expanded=True):
                 st.write("Jumlah data: ", df['polarity'].value_counts().sum())
                 st.write("")
                 st.write("Detail :")
@@ -301,18 +310,53 @@ def analysis_page():
             with st.expander("Process Labeling Positive & Negative", expanded=True):
                 # st.write("Neutral telah disimpan dalam local.")
                 # st.write("")
-                st.write("Neutral dihapus dari polarity.")
-                st.write("")
-                st.write("Total polarity: ")
+                # st.write("Neutral dihapus dari polarity.")
+                # st.write("")
+                st.write("Hasil Polarity: ")
                 st.write(f"{total_polar} (Positive & Negative)")
                 st.write("Detail :")
                 st.write(polar_result)
-
-            with st.expander("Output Labeling dengan Polarity Positive dan Negative", expanded=True):
+            
+            
+            with st.expander("Hasil Labeling Positive & Negative", expanded=True):
                 df_label_polarity = df
                 st.dataframe(df.head(11) , use_container_width=True)
+        
+        positive_words = df[df.polarity == 'positive']['tokenizing'].apply(pd.Series).stack().tolist()
+        positive_word_counts = Counter(positive_words)
 
+        negative_words = df[df.polarity == 'negative']['tokenizing'].apply(pd.Series).stack().tolist()
+        negative_word_counts = Counter(negative_words)
+        
+        with tabTFidf:
+            df = df.copy()
+            df['tokenizing'] = df['tokenizing'].astype(str)
+            
+            tf_idf = TfidfVectorizer()
+
+            review = df['tokenizing'].values.tolist()
+
+            tf_idf_vector = tf_idf.fit(review)
+
+            X = tf_idf_vector.transform(review)
+            y = df['polarity']
+            
+            st.markdown("_Proses memberikan nilai bobot pada dokumen. Proses TF-IDF (Term Frequency-Inverse Document Frequency) tujuannya untuk mengetahui seberapa penting suatu kata dalam dokumen tersebut._")
+            with st.expander("Pembobotan TF-IDF", expanded=True):
+                # st.write("Max features:", content_tfidf)
+                # st.write("")
+                st.text(X[0:2])
+
+        st.divider()
+        
+        st.subheader("Analisis Deskriptif :")
+        tabPie, tabWordcloud, tabTopWords = st.tabs([
+            "&nbsp;&nbsp;&nbsp; **Pie Chart** &nbsp;&nbsp;&nbsp;",
+            "&nbsp;&nbsp;&nbsp; **Wordcloud** &nbsp;&nbsp;&nbsp;",
+            "&nbsp;&nbsp;&nbsp; **Top Words** &nbsp;&nbsp;&nbsp;"
+        ])
         with tabPie:
+            st.markdown("_Proses melakukan visualisasi jumlah sentimen positive & negative menggunakan Pie Chart._")
             # Membuat subset data hanya dengan sentimen positif dan negatif
             df_sub = df.loc[df.polarity.isin(['positive', 'negative'])]
             sizes = [count for count in df_sub.polarity.value_counts()]
@@ -337,11 +381,11 @@ def analysis_page():
                 st.pyplot(fig)
 
         with tabWordcloud:
-            positive_words = df[df.polarity == 'positive']['tokenizing'].apply(pd.Series).stack().tolist()
-            positive_word_counts = Counter(positive_words)
+#             positive_words = df[df.polarity == 'positive']['tokenizing'].apply(pd.Series).stack().tolist()
+#             positive_word_counts = Counter(positive_words)
 
-            negative_words = df[df.polarity == 'negative']['tokenizing'].apply(pd.Series).stack().tolist()
-            negative_word_counts = Counter(negative_words)
+#             negative_words = df[df.polarity == 'negative']['tokenizing'].apply(pd.Series).stack().tolist()
+#             negative_word_counts = Counter(negative_words)
 
             mask_pos = np.array(Image.open("img/train_pos.jpg"))
             mask_neg = np.array(Image.open("img/train_neg.jpg"))
@@ -355,6 +399,8 @@ def analysis_page():
             figPos, axPos = plt.subplots(figsize=(12, 8))
             axPos.imshow(positive_wordcloud.recolor(color_func=ImageColorGenerator(mask_pos)), interpolation='bilinear')
             axPos.axis('off')
+            
+            st.markdown("_Proses menampilkan seluruh kata dalam sentimen pada Wordcloud. Jika kata semakin sering muncul, maka ditampilkan dengan ukuran yang lebih besar._")
             with st.expander("Wordcloud - Kata Positive", expanded=True):
                 st.subheader("Label Positive")
                 st.pyplot(figPos)
@@ -365,48 +411,27 @@ def analysis_page():
             with st.expander("Wordcloud - Kata Negative", expanded=True):
                 st.subheader("Label Negative")
                 st.pyplot(figNeg)
+                
+        with tabTopWords:
+            st.markdown("Top 20 Words dari label positive dan negative")
+            def top_words(hasil_kata_positive, hasil_kata_negative):
+                all_positive_words = [word for sublist in hasil_kata_positive for word in sublist]
+                all_negative_words = [word for sublist in hasil_kata_negative for word in sublist]
+                positive_freq = pd.Series(all_positive_words).value_counts().reset_index().rename(columns={'index': 'Positive Word', 0: 'Frequency'})
+                negative_freq = pd.Series(all_negative_words).value_counts().reset_index().rename(columns={'index': 'Negative Word', 0: 'Frequency'})
+                top_20_positive = positive_freq.head(20)
+                top_20_negative = negative_freq.head(20)
+                return top_20_positive, top_20_negative
 
-        with tabTFidf:
-            df = df.copy()
-            df['tokenizing'] = df['tokenizing'].astype(str)
-            
-            tf_idf = TfidfVectorizer()
+            top_kata_positive, top_kata_negative = top_words(hasil_kata_positive, hasil_kata_negative)
 
-            review = df['tokenizing'].values.tolist()
+            with st.expander("Top Words Positive"):
+                st.dataframe(top_kata_positive, use_container_width=True)
+            with st.expander("Top Words Negative"):
+                st.dataframe(top_kata_negative, use_container_width=True)
 
-            tf_idf_vector = tf_idf.fit(review)
 
-            X = tf_idf_vector.transform(review)
-            y = df['polarity']
-            
-            with st.expander("Output Pembobotan Kata Dengan TF-IDF", expanded=True):
-                # st.write("Max features:", content_tfidf)
-                # st.write("")
-                st.text(X[0:2])
-
-        st.divider()
-
-        st.subheader("Top 20 Words :")
-        def top_words(hasil_kata_positive, hasil_kata_negative):
-            all_positive_words = [word for sublist in hasil_kata_positive for word in sublist]
-            all_negative_words = [word for sublist in hasil_kata_negative for word in sublist]
-            positive_freq = pd.Series(all_positive_words).value_counts().reset_index().rename(columns={'index': 'Positive Word', 0: 'Frequency'})
-            negative_freq = pd.Series(all_negative_words).value_counts().reset_index().rename(columns={'index': 'Negative Word', 0: 'Frequency'})
-            top_20_positive = positive_freq.head(20)
-            top_20_negative = negative_freq.head(20)
-            return top_20_positive, top_20_negative
-        
-        top_kata_positive, top_kata_negative = top_words(hasil_kata_positive, hasil_kata_negative)
-        
-        tab_pos, tab_neg = st.tabs(["&nbsp;&nbsp;&nbsp; **Top Positive Words** &nbsp;&nbsp;&nbsp;",
-                                    "&nbsp;&nbsp;&nbsp; **Top Negative Words** &nbsp;&nbsp;&nbsp;"])
-        with tab_pos:
-            st.dataframe(top_kata_positive, use_container_width=True)
-        with tab_neg:
-            st.dataframe(top_kata_negative, use_container_width=True)
-        
-        st.divider()
-        
+            st.divider()        
         # 6. Modeling
         st.subheader("Modeling :", anchor="modeling")
         tabPisahData, tabRFC = st.tabs([
@@ -419,8 +444,9 @@ def analysis_page():
             all_data = len(y)
             data_train = len(y_train)
             data_test = len(y_test)
-
-            with st.expander("Output Pemisahan Data Train & Test", expanded=True):
+            
+            st.markdown("_Proses pemisahan data latih (train) & data uji (test). Data latih (train) ditetapkan 90%, dan data uji (test) sebanyak 10%._")
+            with st.expander("Hasil Pemisahan Data Train & Test", expanded=True):
                 st.write("Total Data : ", all_data)
                 st.write("")
                 st.write("Total Data Train : ", data_train)
@@ -443,9 +469,10 @@ def analysis_page():
 
             akurasi = accuracy_score(y_pred, y_test) * 100
             akurasi_bulat = round(akurasi, 1)
-
-            with st.expander("Output Akurasi Random Forest Classifier", expanded=True):
-                st.write("Random Forest Classifier Accuracy: ", akurasi_bulat, "%")
+            
+            st.markdown("_Pada proses ini, data yang telah dibagi akan dimodeling dengan Random Forest Classifier untuk mendapatkan akurasi._")
+            with st.expander("Hasil Modeling", expanded=True):
+                st.write("Random Forest Classifier (Accuracy): ", akurasi_bulat, "%")
 
         st.divider()
     
@@ -461,8 +488,9 @@ def analysis_page():
             classification_df = pd.DataFrame(classification_rep).transpose()
             classification_df = classification_df.drop(['accuracy'], axis=0)
             classification_df = classification_df.round(2)
-
-            with st.expander("Output Classification Report", expanded=True):
+            
+            st.markdown("_Proses menampilkan hasil kinerja model klasifikasi. Membantu dalam menganalisis dan memahami seberapa baik model dapat memprediksi label dengan benar. Jika semakin tinggi persentase Precision, Recall, dan F1-Score maka model sudah seimbang dan baik._")
+            with st.expander("Hasil Classification Report", expanded=True):
                 st.dataframe(classification_df)
 
 
@@ -470,7 +498,8 @@ def analysis_page():
             cm = confusion_matrix(y_test, y_pred)
             figCM, ax = plt.subplots()
             ConfusionMatrixDisplay(cm, display_labels=rfc.classes_).plot(ax=ax)
-                
+            
+            st.markdown("_Proses menampilkan Confusion Matrix dan Menghitung Akurasi Model. Confusion Matrix menyatakan jumlah data uji (test) yang benar dan salah diklasifikasi. Menghasilkan output True Positive, True Negative, False Positive, dan False Negative. Jika jumlah True (Positive & Negative) lebih banyak dari False (Positive & Negative), maka hasil data uji (test) dikatakan sudah baik._")
             with st.expander("Confusion Matrix", expanded=True):
                 st.pyplot(figCM)
                 
@@ -504,19 +533,6 @@ def analysis_page():
                         \small \frac{%d + %d}{%d + %d + %d + %d} = %s
                     ''' % (TP, TN, TP, TN, FP, FN, resultAccuracy)) 
         
-        # Downloader                    
-#         with st.expander("Download DF Label Polarity", expanded=True):
-#             #df_polarity
-#             df_convert = df_label_polarity
-
-#             #csv
-#             csv = df_convert.to_csv()
-
-#             st.download_button(label = "🖨️ Download CSV", 
-#                                   data = csv,
-#                                   file_name = "df_label_polarity.csv", 
-#                                   mime = 'text/csv')                
-
     # run process
     df = df()
     process(df)
