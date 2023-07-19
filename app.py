@@ -119,9 +119,9 @@ def main():
         
         if selected == "Login":
             name_auth, authentication_status, username_auth = authenticator.login("Login", "main")
-            # st.session_state['name'] = name_auth
-            # st.session_state['authentication_status'] = authentication_status
-            # st.session_state['username'] = username_auth
+            st.session_state['name'] = name_auth
+            st.session_state['authentication_status'] = authentication_status
+            st.session_state['username'] = username_auth
             
             if authentication_status == False:
                 st.error("Username atau password salah. Mohon isi kolom dengan benar.")
