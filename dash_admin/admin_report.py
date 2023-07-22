@@ -88,10 +88,14 @@ def admin_report_page():
         # mengubah format
         # selected_columns['at'] = selected_columns['at'].dt.strftime('%d %B, %Y')
         selected_columns = selected_columns.copy()
-        selected_columns['at'] = selected_columns['at'].dt.strftime('%d-%m-%Y')
 
-        selected_columns.reset_index(drop=True, inplace=True)
+        
+        selected_columns['at'] = selected_columns['at'].dt.strftime('%d-%m-%Y')
+        # selected_columns.sort_values(by='at', ascending=True, inplace=True)
+
+        selected_columns.reset_index(drop=True)
         selected_columns.index += 1
+        # selected_columns.sort_values(by='at', ascending=True)
 
         # Display
         st.write("")
