@@ -79,8 +79,7 @@ def user_home_page():
         if st.checkbox("Graph 2", value=False):
             graph2 = graphviz.Digraph()
             graph2.edge('Data Checking', 'Data Normalize')
-            graph2.edge('Data Normalize','Lemmatization')
-            graph2.edge('Lemmatization', 'Stemming')
+            graph2.edge('Data Normalize','Stemming')
             graph2.edge('Stemming','Slang Word Normalization')
             graph2.edge('Slang Word Normalization','Data Normalize')
             st.graphviz_chart(graph2)
@@ -116,8 +115,7 @@ def user_home_page():
         if st.checkbox("Graph 6", value=False):
             graph6 = graphviz.Digraph()
             graph6.edge('Data Checking', 'Evaluasi Performa')
-            graph6.edge('Evaluasi Performa','Diagram ROC-AUC')
-            graph6.edge('Diagram ROC-AUC','Classification Report')
+            graph6.edge('Evaluasi Performa','Classification Report')
             graph6.edge('Classification Report','Confusion Matrix')
             graph6.edge('Confusion Matrix','Evaluasi Performa')
             graph6.edge('Data Checking','End')
