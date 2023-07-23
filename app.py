@@ -132,7 +132,7 @@ def main():
             all_keys = get_all_keys()
 
             st.info("Silakan isi form untuk mendaftar user baru.", icon="ℹ️")
-            form_register = st.form('form_register', clear_on_submit=True)
+            form_register = st.form('form_register', clear_on_submit=False)
             form_register.subheader("Register")
 
             # form_register.write("")
