@@ -115,14 +115,14 @@ def admin_report_page():
              Data dari <b>{IDstart_date}</b> sampai <b>{IDend_date}</b></span>
          ''', unsafe_allow_html = True)
         
-        total_data = len(selected_columns)
-        st.markdown(f'''
-             <span style="text-decoration: none;
-             font-family: 'Open Sans'; font-size: 13px;
-             color: white; background-color: #046cd4; 
-             border-radius: 20px; padding: 7px 13px;">
-             Total Data: <b>{total_data}</b></span>
-         ''', unsafe_allow_html = True)
+        # total_data = len(selected_columns)
+        # st.markdown(f'''
+        #      <span style="text-decoration: none;
+        #      font-family: 'Open Sans'; font-size: 13px;
+        #      color: white; background-color: #046cd4; 
+        #      border-radius: 20px; padding: 7px 13px;">
+        #      Total Data: <b>{total_data}</b></span>
+        #  ''', unsafe_allow_html = True)
         
         st.dataframe(selected_columns, use_container_width=True, hide_index=True)
         
