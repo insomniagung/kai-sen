@@ -82,7 +82,7 @@ def admin_database_page():
         st.info("Silakan isi form register untuk menambahkan user baru.", icon="ℹ️")
         st.subheader("Register")
         
-        form_register = st.form('form_register', clear_on_submit=True)
+        form_register = st.form('form_register', clear_on_submit=False)
         
         txt_username = form_register.text_input("Input Username :")
         txt_name = form_register.text_input("Input Nama :")
