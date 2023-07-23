@@ -28,7 +28,8 @@ def admin_report_page():
     
     @st.cache_data(show_spinner=False)
     def df_report():
-        df_report = pd.read_csv("data/ulasan_tiket_kai_access.csv")
+        # df_report = pd.read_csv("data/ulasan_tiket_kai_access.csv")
+        df_report = pd.read_csv("data/df_label_polarity_tanggal.csv")
         return df_report
         
     st.title("Report", help="Halaman laporan dari dataset.")
@@ -93,7 +94,7 @@ def admin_report_page():
         filtered_df = df_report.loc[(df_report['at'] >= start_date) & (df_report['at'] <= end_date_plus)]
 
         sorted_df = filtered_df.sort_values('at', ascending=True)
-        selected_columns = sorted_df[['content', 'at']]
+        selected_columns = sorted_df[['content', 'at','polarity']]
 
         # mengubah format
         selected_columns = selected_columns.copy()        
@@ -125,7 +126,7 @@ def admin_report_page():
         
         st.dataframe(selected_columns, use_container_width=True, hide_index=True)
         
-        kolom = ['content', 'at']
+        kolom = ['content', 'at','polarity']
         selected_columns = selected_columns.loc[:, kolom]
     with st.sidebar:
         with st.expander("Download", expanded=True):
