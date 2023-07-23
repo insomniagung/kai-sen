@@ -35,7 +35,7 @@ def admin_report_page():
     st.divider()
     
     df_report = df_report()
-    
+    # st.write(len(df_report))
     st.markdown(f'''
              <span style="text-decoration: none;
              font-family: 'Open Sans'; font-size: 13px;
@@ -47,30 +47,40 @@ def admin_report_page():
     df_report['at'] = pd.to_datetime(df_report['at'])
     minimum_date = df_report['at'].dt.date.min()
     maximum_date = df_report['at'].dt.date.max()
-        
+    # st.write(len(df_report))
+    
+    # st.write(minimum_date)
+    # st.write(maximum_date)
+    
     col1, col2 = st.columns(2)
+    
+    # min_d = datetime.date(2018, 9, 22) #22 September 2018
+    # max_d = datetime.date(2023, 7, 5) #5 Juli 2023
+    
     with col1:
         d1 = st.date_input(
             "Input Tanggal Awal:",
+            # min_value = minimum_date,
+            # max_value = maximum_date,
             min_value = minimum_date,
             max_value = maximum_date,
-            value=datetime.date(2023, 1, 1)
+            value=minimum_date,
+            format="DD/MM/YYYY",
         )
     with col2:
         d2 = st.date_input(
             "Input Tanggal Akhir:",
             min_value = minimum_date,
             max_value = maximum_date,
-            value=datetime.date(2023, 2, 1)
+            value=maximum_date,
+            format="DD/MM/YYYY",
         )
-        
+    
     start_date = d1.strftime('%Y-%m-%d')
     IDstart_date = d1.strftime('%d %B %Y')
-    # session['IDstart_date'] = IDstart_date
     
     end_date = d2.strftime('%Y-%m-%d')
     IDend_date = d2.strftime('%d %B %Y')
-    # session['IDend_date'] = IDend_date
     
     end_date_plus = (d2 + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
     
@@ -86,15 +96,12 @@ def admin_report_page():
         selected_columns = sorted_df[['content', 'at']]
 
         # mengubah format
-        # selected_columns['at'] = selected_columns['at'].dt.strftime('%d %B, %Y')
-        selected_columns = selected_columns.copy()
-
-        
+        selected_columns = selected_columns.copy()        
         selected_columns['at'] = selected_columns['at'].dt.strftime('%d-%m-%Y')
-        # selected_columns.sort_values(by='at', ascending=True, inplace=True)
-
-        selected_columns.reset_index(drop=True)
-        selected_columns.index += 1
+        
+        # menghapus index
+        # selected_columns.reset_index(drop=True)
+        # selected_columns.index += 1
         # selected_columns.sort_values(by='at', ascending=True)
 
         # Display
@@ -106,8 +113,17 @@ def admin_report_page():
              border-radius: 20px; padding: 7px 13px;">
              Data dari <b>{IDstart_date}</b> sampai <b>{IDend_date}</b></span>
          ''', unsafe_allow_html = True)
-
-        st.dataframe(selected_columns, use_container_width=True, hide_index=False)
+        
+        total_data = len(selected_columns)
+        st.markdown(f'''
+             <span style="text-decoration: none;
+             font-family: 'Open Sans'; font-size: 13px;
+             color: white; background-color: #046cd4; 
+             border-radius: 20px; padding: 7px 13px;">
+             Total Data: <b>{total_data}</b></span>
+         ''', unsafe_allow_html = True)
+        
+        st.dataframe(selected_columns, use_container_width=True, hide_index=True)
         
         kolom = ['content', 'at']
         selected_columns = selected_columns.loc[:, kolom]
