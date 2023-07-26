@@ -2,3 +2,6 @@ secrets.toml
 sentiment_analysis(fix).ipynb
 sentiment_analysis.ipynb
 sentiment_analysis_predictor.ipynb
+test.py
+program.py
+program.xlsx

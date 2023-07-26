@@ -330,11 +330,11 @@ def analysis_page():
         
         with tabTFidf:
             df = df.copy()
-            df['tokenizing'] = df['tokenizing'].astype(str)
+            df['removal'] = df['removal'].astype(str)
             
             tf_idf = TfidfVectorizer()
 
-            review = df['tokenizing'].values.tolist()
+            review = df['removal'].values.tolist()
 
             tf_idf_vector = tf_idf.fit(review)
 
