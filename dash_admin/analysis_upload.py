@@ -500,7 +500,7 @@ def analysis_upload_page():
         ])
 
         # df_2400_neg_pos = pd.read_excel("2400_pos_neg.xlsx")
-        df_2400_neg_pos = pd.read_excel("2400_pos_neg.csv")
+        df_2400_neg_pos = pd.read_csv("2400_pos_neg.csv")
         df = df_2400_neg_pos
 
         cek_jumlah_positive = len(df[['content','label','tokenizing']][df['label'] == 'Positive'])
