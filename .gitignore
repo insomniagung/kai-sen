@@ -2,6 +2,14 @@ secrets.toml
 sentiment_analysis(fix).ipynb
 sentiment_analysis.ipynb
 sentiment_analysis_predictor.ipynb
+sentiment_analysis_new.ipynb
+scraping.ipynb
+1200_negative.xlsx
+1200_positive.xlsx
+2400_pos_neg.xlsx
+keluhan_harga_tiket.xlsx
+keluhan_pembayaran_tiket.xlsx
+keluhan_pemesanan_tiket.xlsx
 test.py
 program.py
 program.xlsx

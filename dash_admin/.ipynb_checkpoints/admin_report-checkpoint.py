@@ -25,12 +25,17 @@ def convert_excel(df):
     return processed_data
     
 def admin_report_page():
-    
     @st.cache_data(show_spinner=False)
     def df_report():
         # df_report = pd.read_csv("data/ulasan_tiket_kai_access.csv")
-        df_report = pd.read_csv("data/df_label_polarity_tanggal.csv")
+        # df_report = pd.read_csv("data/df_label_polarity_tanggal.csv")
+        df_report = pd.read_csv("data/ulasan_tiket_kai_access_labeling_reviewer.csv")
         return df_report
+    
+    @st.cache_data(show_spinner=False)
+    def df():
+        df = pd.read_csv("data/ulasan_tiket_kai_access_labeling_reviewer.csv")
+        return df
         
     st.title("Report", help="Halaman laporan dari dataset.")
     st.divider()
@@ -41,28 +46,18 @@ def admin_report_page():
              <span style="text-decoration: none;
              font-family: 'Open Sans'; font-size: 13px;
              color: white; background-color: #046cd4; 
-             border-radius: 5px; padding: 7px 13px;">
-             <b>Cari data berdasarkan tanggal</b></span>
+             border-radius: 20px; padding: 7px 13px;">
+             <b>Data berdasarkan tanggal</b></span>
          ''', unsafe_allow_html = True)
     
     df_report['at'] = pd.to_datetime(df_report['at'])
     minimum_date = df_report['at'].dt.date.min()
     maximum_date = df_report['at'].dt.date.max()
-    # st.write(len(df_report))
-    
-    # st.write(minimum_date)
-    # st.write(maximum_date)
-    
     col1, col2 = st.columns(2)
-    
-    # min_d = datetime.date(2018, 9, 22) #22 September 2018
-    # max_d = datetime.date(2023, 7, 5) #5 Juli 2023
     
     with col1:
         d1 = st.date_input(
             "Input Tanggal Awal:",
-            # min_value = minimum_date,
-            # max_value = maximum_date,
             min_value = minimum_date,
             max_value = maximum_date,
             value=minimum_date,
@@ -94,7 +89,7 @@ def admin_report_page():
         filtered_df = df_report.loc[(df_report['at'] >= start_date) & (df_report['at'] <= end_date_plus)]
 
         sorted_df = filtered_df.sort_values('at', ascending=True)
-        selected_columns = sorted_df[['content', 'at','polarity']]
+        selected_columns = sorted_df[['content','label','at']]
 
         # mengubah format
         selected_columns = selected_columns.copy()        
@@ -115,21 +110,13 @@ def admin_report_page():
              Data dari <b>{IDstart_date}</b> sampai <b>{IDend_date}</b></span>
          ''', unsafe_allow_html = True)
         
-        # total_data = len(selected_columns)
-        # st.markdown(f'''
-        #      <span style="text-decoration: none;
-        #      font-family: 'Open Sans'; font-size: 13px;
-        #      color: white; background-color: #046cd4; 
-        #      border-radius: 20px; padding: 7px 13px;">
-        #      Total Data: <b>{total_data}</b></span>
-        #  ''', unsafe_allow_html = True)
-        
         st.dataframe(selected_columns, use_container_width=True, hide_index=True)
         
-        kolom = ['content', 'at','polarity']
+        kolom = ['content','label','at']
         selected_columns = selected_columns.loc[:, kolom]
+        
     with st.sidebar:
-        with st.expander("Download", expanded=True):
+        with st.expander("Download (berdasarkan tanggal)", expanded=False):
             csv = convert_csv(selected_columns)
             excels = convert_excel(selected_columns)
             
@@ -142,6 +129,143 @@ def admin_report_page():
                                data = excels,
                                file_name = f"Report Data Excel ({IDstart_date}) to ({IDend_date}).xlsx",
                                mime = 'text/xlsx')
+            
+    # ---------
+    st.divider()
+    # tabPelayanan, tabQuery = st.tabs(["&nbsp;&nbsp;&nbsp; **Data (Pelayanan)** &nbsp;&nbsp;&nbsp;", 
+    #                                   "&nbsp;&nbsp;&nbsp; **Query Data** &nbsp;&nbsp;&nbsp;"])
+    # with tabPelayanan:
+    # st.write("")
+    st.markdown(f'''
+         <span style="text-decoration: none;
+         font-family: 'Open Sans'; font-size: 13px;
+         color: white; background-color: #046cd4; 
+         border-radius: 20px; padding: 7px 13px;">
+         <b>Data berdasarkan Pelayanan</b></span>
+     ''', unsafe_allow_html = True)
 
+    # st.write("")
+    menu_pelayanan = ["Pemesanan Tiket","Pembayaran Tiket", "Harga Tiket"]
+    select_option = st.selectbox(label="Pilih Pelayanan", options=menu_pelayanan, index=0, label_visibility="collapsed")
+
+    df = df()
+    df['at'] = pd.to_datetime(df['at'], format='%Y-%m-%d')
+    df['at'] = df['at'].dt.strftime('%d-%m-%Y')        
+    if select_option == "Pemesanan Tiket":
+        keyword1 = 'pesan tiket'
+        keyword2 = 'pemesanan tiket'
+        keyword3 = 'order tiket'
+        keyword4 = 'book tiket'
+        keyword5 = 'booking tiket'
+        key1 = df['content'].str.contains(keyword1, case=False)
+        key2 = df['content'].str.contains(keyword2, case=False)
+        key3 = df['content'].str.contains(keyword3, case=False)
+        key4 = df['content'].str.contains(keyword4, case=False)
+        key5 = df['content'].str.contains(keyword5, case=False)    
+        data_keluhan_pemesanan_tiket = key1 | key2 | key3 | key4 | key5
+        df_keluhan_pemesanan_tiket = df[data_keluhan_pemesanan_tiket]
+        df_keluhan_pemesanan_tiket = df_keluhan_pemesanan_tiket.drop_duplicates()
+
+        df_keluhan_pemesanan_tiket = df_keluhan_pemesanan_tiket[['content','label','at']]
+        with st.expander("DataFrame", expanded=True):
+            st.write("Total data keluhan pemesanan tiket :", len(df_keluhan_pemesanan_tiket))
+            st.dataframe(df_keluhan_pemesanan_tiket.reset_index(drop=True), use_container_width=True)
+            pelayanan_df = df_keluhan_pemesanan_tiket.reset_index(drop=True)
+
+    elif select_option == "Pembayaran Tiket":
+        keyword1 = 'pembayaran tiket'
+        keyword2 = 'bayar tiket'
+        keyword3 = 'payment tiket'
+        key1 = df['content'].str.contains(keyword1, case=False)
+        key2 = df['content'].str.contains(keyword2, case=False)
+        key3 = df['content'].str.contains(keyword3, case=False)
+        data_keluhan_pembayaran_tiket = key1 | key2 | key3
+        df_keluhan_pembayaran_tiket = df[data_keluhan_pembayaran_tiket]
+        df_keluhan_pembayaran_tiket = df_keluhan_pembayaran_tiket.drop_duplicates()
+
+        df_keluhan_pembayaran_tiket = df_keluhan_pembayaran_tiket[['content','label','at']]
+        with st.expander("DataFrame", expanded=True):
+            st.write("Total data keluhan pembayaran tiket :", len(df_keluhan_pembayaran_tiket))
+            st.dataframe(df_keluhan_pembayaran_tiket.reset_index(drop=True),use_container_width=True)
+            pelayanan_df = df_keluhan_pembayaran_tiket.reset_index(drop=True)
+
+    elif select_option == "Harga Tiket":
+        keyword1 = 'harga tiket'
+        keyword2 = 'promo tiket'
+        key1 = df['content'].str.contains(keyword1, case=False)
+        key2 = df['content'].str.contains(keyword2, case=False)
+        data_keluhan_harga_tiket = key1 | key2
+        df_keluhan_harga_tiket = df[data_keluhan_harga_tiket]
+        df_keluhan_harga_tiket = df_keluhan_harga_tiket.drop_duplicates()
+
+        df_keluhan_harga_tiket = df_keluhan_harga_tiket[['content','label','at']]
+        with st.expander("DataFrame", expanded=True):
+            # st.write("")
+            st.write("Total data keluhan harga tiket :", len(df_keluhan_harga_tiket))
+            st.dataframe(df_keluhan_harga_tiket.reset_index(drop=True), use_container_width=True)
+            pelayanan_df = df_keluhan_harga_tiket.reset_index(drop=True)
+    
+    with st.sidebar:
+        with st.expander("Download (berdasarkan pelayanan)", expanded=False):
+            csv = convert_csv(pelayanan_df)
+            excels = convert_excel(pelayanan_df)
+            
+            st.download_button(label = "🖨️ Download CSV",
+                               data = csv, 
+                               file_name = f"Report Data CSV Pelayanan.csv",
+                               mime = 'text/csv')
+            
+            st.download_button(label = "🖨️ Download Excel",
+                               data = excels,
+                               file_name = f"Report Data Excel Pelayanan.xlsx",
+                               mime = 'text/xlsx')
+    # with tabQuery:
+    # ----------------------
+    st.divider()
+    # st.write("")
+    st.markdown(f'''
+         <span style="text-decoration: none;
+         font-family: 'Open Sans'; font-size: 13px;
+         color: white; background-color: #046cd4; 
+         border-radius: 20px; padding: 7px 13px;">
+         <b>Data berdasarkan Query</b></span>
+     ''', unsafe_allow_html = True)
+
+    keyword_input = st.text_input(label="Input Query", 
+                                  # label_visibility="collapsed"
+                                 )
+    # keyword = ''
+    if st.button("Cari"):
+        if keyword_input:
+            keywords = df['content'].str.contains(keyword_input, case=False)
+            df_query = df[keywords]
+            df_query = df_query.drop_duplicates()
+            df_query = df_query[['content','label','at']]
+            with st.expander("DataFrame", expanded=True):
+                st.write(f"Hasil Query : {keyword_input}")
+                st.write("Total : ", len(df_query))
+                st.dataframe(df_query.reset_index(drop=True), use_container_width=True)
+                query_df = df_query.reset_index(drop=True)
+                
+            with st.sidebar:
+                with st.expander("Download (berdasarkan query)", expanded=False):
+                    csv = convert_csv(query_df)
+                    excels = convert_excel(query_df)
+
+                    st.download_button(label = "🖨️ Download CSV",
+                                       data = csv, 
+                                       file_name = f"Report Data CSV Query.csv",
+                                       mime = 'text/csv')
+
+                    st.download_button(label = "🖨️ Download Excel",
+                                       data = excels,
+                                       file_name = f"Report Data Excel Query.xlsx",
+                                       mime = 'text/xlsx')            
+        else:
+            # with st.expander("DataFrame", expanded=True):
+            #     st.dataframe(df.reset_index(drop=True), use_container_width=True)
+            st.warning("Input Query dahulu.")     
+    
+        
 hide_streamlit = """ <style> footer {visibility: hidden;} </style> """    
 st.markdown(hide_streamlit, unsafe_allow_html=True)             

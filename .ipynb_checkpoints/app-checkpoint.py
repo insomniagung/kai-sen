@@ -15,11 +15,15 @@ import streamlit_authenticator as stauth
 import base64
 
 # --- import pages ---
-import predictor as pr
+# import predictor as pr
+import predictor_user as pru
+
 from dash_admin.admin_home import admin_home_page
 from dash_admin.admin_analysis import admin_analysis_page
 from dash_admin.admin_report import admin_report_page
 from dash_admin.admin_database import admin_database_page
+
+from dash_admin.analysis_upload import analysis_upload_page
 
 from dash_user.user_home import user_home_page
 from dash_user.user_database import user_database_page
@@ -119,9 +123,9 @@ def main():
         
         if selected == "Login":
             name_auth, authentication_status, username_auth = authenticator.login("Login", "main")
-            # st.session_state['name'] = name_auth
-            # st.session_state['authentication_status'] = authentication_status
-            # st.session_state['username'] = username_auth
+            st.session_state['name'] = name_auth
+            st.session_state['authentication_status'] = authentication_status
+            st.session_state['username'] = username_auth
             
             if authentication_status == False:
                 st.error("Username atau password salah. Mohon isi kolom dengan benar.")
@@ -132,7 +136,7 @@ def main():
             all_keys = get_all_keys()
 
             st.info("Silakan isi form untuk mendaftar user baru.", icon="ℹ️")
-            form_register = st.form('form_register', clear_on_submit=True)
+            form_register = st.form('form_register', clear_on_submit=False)
             form_register.subheader("Register")
 
             # form_register.write("")
@@ -173,7 +177,12 @@ def main():
             with st.sidebar:
                 st.divider()
                 
-                menu = ["🏡 Home", "📋 Sentiment Analysis", "💬 Sentiment Predictor", "📚 Report", "⚙️ Account Management"]
+                # menu = ["🏡 Home", "📋 Sentiment Analysis",
+                #         "📂 Sentiment Upload","💬 Sentiment Predictor", 
+                #         "📚 Report", "⚙️ Account Management"]
+                menu = ["🏡 Home", "📋 Sentiment Analysis",
+                        "📂 Sentiment Upload",
+                        "📚 Report", "⚙️ Account Management"]
                 selected = st.selectbox(label = "&nbsp;&nbsp; **DASHBOARD** ", 
                                         options = menu, 
                                         index=0, 
@@ -189,8 +198,10 @@ def main():
                 admin_home_page()
             elif selected == "📋 Sentiment Analysis":
                 admin_analysis_page()
-            elif selected == "💬 Sentiment Predictor":
-                pr.predictor_page()    
+            elif selected == "📂 Sentiment Upload":
+                analysis_upload_page()    
+            # elif selected == "💬 Sentiment Predictor":
+            #     pr.predictor_page()    
             elif selected == "📚 Report":
                 admin_report_page()
             elif selected == "⚙️ Account Management":
@@ -201,7 +212,8 @@ def main():
             #sidebar
             with st.sidebar:
                 st.divider()
-                menu = ["🏡 Home", "💬 Sentiment Predictor", "⚙️ Account Management"]
+                # menu = ["🏡 Home", "💬 Sentiment Predictor", "⚙️ Account Management"]
+                menu = ["💬 Sentiment Predictor", "⚙️ Account Management"]
                 selected = st.selectbox(label = "&nbsp;&nbsp; **DASHBOARD** ", 
                                         options = menu, 
                                         index=0, 
@@ -216,7 +228,11 @@ def main():
                 st.sidebar.info(f"Role: **{role.capitalize()}**", icon="ℹ️")
                 user_home_page()
             elif selected == "💬 Sentiment Predictor":
-                pr.predictor_page()      
+                st.sidebar.info(f"Username: **{username.capitalize()}**", icon="ℹ️")
+                st.sidebar.info(f"Role: **{role.capitalize()}**", icon="ℹ️")
+                st.sidebar.info(f"Welcome, **_{name}_**!", icon="ℹ️")
+                pru.predictor_page()
+                # pr.predictor_page()      
             elif selected == "⚙️ Account Management":
                 user_database_page()
     

@@ -7,10 +7,7 @@ import pandas as pd
 
 import preprocess_predictor as prep
 
-# with gzip.open('rfc.pkl.gz', 'rb') as file:
-#     rfc, tf_idf_vector = pickle.load(file)
-
-with open('rfc.pkl', 'rb') as file:
+with open('rfc_new.pkl', 'rb') as file:
     rfc, tf_idf_vector = pickle.load(file)
     
 def predict_sentiment(sample_review):
