@@ -4,6 +4,7 @@ session = st.session_state
 import pandas as pd
 import datetime
 
+import matplotlib.pyplot as plt
 import xlsxwriter
 from io import BytesIO
 
@@ -153,57 +154,72 @@ def admin_report_page():
     df['at'] = df['at'].dt.strftime('%d-%m-%Y')        
     if select_option == "Pemesanan Tiket":
         keyword1 = 'pesan tiket'
-        keyword2 = 'pemesanan tiket'
-        keyword3 = 'order tiket'
-        keyword4 = 'book tiket'
-        keyword5 = 'booking tiket'
         key1 = df['content'].str.contains(keyword1, case=False)
-        key2 = df['content'].str.contains(keyword2, case=False)
-        key3 = df['content'].str.contains(keyword3, case=False)
-        key4 = df['content'].str.contains(keyword4, case=False)
-        key5 = df['content'].str.contains(keyword5, case=False)    
-        data_keluhan_pemesanan_tiket = key1 | key2 | key3 | key4 | key5
+        data_keluhan_pemesanan_tiket = key1
         df_keluhan_pemesanan_tiket = df[data_keluhan_pemesanan_tiket]
         df_keluhan_pemesanan_tiket = df_keluhan_pemesanan_tiket.drop_duplicates()
 
         df_keluhan_pemesanan_tiket = df_keluhan_pemesanan_tiket[['content','label','at']]
         with st.expander("DataFrame", expanded=True):
-            st.write("Total data keluhan pemesanan tiket :", len(df_keluhan_pemesanan_tiket))
+            # st.write("Total data keluhan pemesanan tiket :", len(df_keluhan_pemesanan_tiket))
             st.dataframe(df_keluhan_pemesanan_tiket.reset_index(drop=True), use_container_width=True)
             pelayanan_df = df_keluhan_pemesanan_tiket.reset_index(drop=True)
 
     elif select_option == "Pembayaran Tiket":
-        keyword1 = 'pembayaran tiket'
-        keyword2 = 'bayar tiket'
-        keyword3 = 'payment tiket'
+        keyword1 = 'bayar tiket'
         key1 = df['content'].str.contains(keyword1, case=False)
-        key2 = df['content'].str.contains(keyword2, case=False)
-        key3 = df['content'].str.contains(keyword3, case=False)
-        data_keluhan_pembayaran_tiket = key1 | key2 | key3
+        
+        data_keluhan_pembayaran_tiket = key1
         df_keluhan_pembayaran_tiket = df[data_keluhan_pembayaran_tiket]
         df_keluhan_pembayaran_tiket = df_keluhan_pembayaran_tiket.drop_duplicates()
 
         df_keluhan_pembayaran_tiket = df_keluhan_pembayaran_tiket[['content','label','at']]
         with st.expander("DataFrame", expanded=True):
-            st.write("Total data keluhan pembayaran tiket :", len(df_keluhan_pembayaran_tiket))
+            # st.write("Total data keluhan pembayaran tiket :", len(df_keluhan_pembayaran_tiket))
             st.dataframe(df_keluhan_pembayaran_tiket.reset_index(drop=True),use_container_width=True)
             pelayanan_df = df_keluhan_pembayaran_tiket.reset_index(drop=True)
 
     elif select_option == "Harga Tiket":
         keyword1 = 'harga tiket'
-        keyword2 = 'promo tiket'
         key1 = df['content'].str.contains(keyword1, case=False)
-        key2 = df['content'].str.contains(keyword2, case=False)
-        data_keluhan_harga_tiket = key1 | key2
+        # data_keluhan_harga_tiket = key1 | key2
+        data_keluhan_harga_tiket = key1
         df_keluhan_harga_tiket = df[data_keluhan_harga_tiket]
         df_keluhan_harga_tiket = df_keluhan_harga_tiket.drop_duplicates()
 
         df_keluhan_harga_tiket = df_keluhan_harga_tiket[['content','label','at']]
         with st.expander("DataFrame", expanded=True):
             # st.write("")
-            st.write("Total data keluhan harga tiket :", len(df_keluhan_harga_tiket))
+            # st.write("Total data keluhan harga tiket :", len(df_keluhan_harga_tiket))
             st.dataframe(df_keluhan_harga_tiket.reset_index(drop=True), use_container_width=True)
             pelayanan_df = df_keluhan_harga_tiket.reset_index(drop=True)
+            
+    # Menghitung jumlah data berdasarkan kata kunci
+    st.write("")
+    pesan_tiket_count = df[df['content'].str.contains('pesan tiket', case=False)].shape[0]
+    bayar_tiket_count = df[df['content'].str.contains('bayar tiket', case=False)].shape[0]
+    harga_tiket_count = df[df['content'].str.contains('harga tiket', case=False)].shape[0]
+
+    # Membuat Pie Chart
+    labels = ['Pemesanan Tiket', 'Pembayaran Tiket', 'Harga Tiket']
+    sizes = [pesan_tiket_count, bayar_tiket_count, harga_tiket_count]
+    colors = ['#aca2d0', '#ff948c', '#5ca992']
+    explode = (0.1, 0.1, 0)
+
+    total_sizes = sum(sizes)
+    fig, ax = plt.subplots(figsize=(4, 4), facecolor='none')
+    wedgeprops = {'width': 0.7, 'edgecolor': 'white', 'linewidth': 1}
+    pie = ax.pie(x=sizes, 
+                 # labels=labels, 
+                 colors=colors, explode=explode,
+                 autopct=lambda pct: "\n{:.1f}%\n".format(pct),
+                 textprops={'fontsize': 10, 'color': 'black'}, shadow=True,
+                 wedgeprops=wedgeprops)
+    ax.legend(pie[0], labels, loc='center left', fontsize=8)
+    ax.set_title('(Keluhan Pengguna KAI Access)', fontsize=10, color='white', pad=1)
+    ax.set_facecolor('none')
+    with st.expander("Pie Chart", expanded=True):
+        st.pyplot(fig)
     
     with st.sidebar:
         with st.expander("Download (berdasarkan pelayanan)", expanded=False):

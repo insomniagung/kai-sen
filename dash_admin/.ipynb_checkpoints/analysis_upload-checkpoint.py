@@ -83,209 +83,33 @@ def analysis_upload_page():
         st.write("\n\n")
         st.markdown("Analisis Keluhan Pengguna :")
         st.markdown("_Dilakukan analisis keluhan pengguna terkait pemesanan, pembayaran, serta harga tiket._")
-        tabPemesanan, tabPembayaran, tabHarga= st.tabs([
-            "&nbsp;&nbsp;&nbsp; **Pemesanan Tiket** &nbsp;&nbsp;&nbsp;",
-            "&nbsp;&nbsp;&nbsp; **Pembayaran Tiket** &nbsp;&nbsp;&nbsp;",
-            "&nbsp;&nbsp;&nbsp; **Harga Tiket** &nbsp;&nbsp;&nbsp;",
-        ])
+        
+        # Menghitung jumlah data berdasarkan kata kunci
+        pesan_tiket_count = df[df['content'].str.contains('pesan tiket', case=False)].shape[0]
+        bayar_tiket_count = df[df['content'].str.contains('bayar tiket', case=False)].shape[0]
+        harga_tiket_count = df[df['content'].str.contains('harga tiket', case=False)].shape[0]
 
-        with tabPemesanan:
-            keyword1 = 'pesan tiket'
-            keyword2 = 'pemesanan tiket'
-            keyword3 = 'order tiket'
-            keyword4 = 'book tiket'
-            keyword5 = 'booking tiket'
-            key1 = df['content'].str.contains(keyword1, case=False)
-            key2 = df['content'].str.contains(keyword2, case=False)
-            key3 = df['content'].str.contains(keyword3, case=False)
-            key4 = df['content'].str.contains(keyword4, case=False)
-            key5 = df['content'].str.contains(keyword5, case=False)    
-            data_keluhan_pemesanan_tiket = key1 | key2 | key3 | key4 | key5
-            df_keluhan_pemesanan_tiket = df[data_keluhan_pemesanan_tiket]
-            df_keluhan_pemesanan_tiket = df_keluhan_pemesanan_tiket.drop_duplicates()
+        # Membuat Pie Chart
+        labels = ['Pemesanan Tiket', 'Pembayaran Tiket', 'Harga Tiket']
+        sizes = [pesan_tiket_count, bayar_tiket_count, harga_tiket_count]
+        colors = ['#aca2d0', '#ff948c', '#5ca992']
+        explode = (0.1, 0.1, 0)
 
-            with st.expander("DataFrame", expanded=True):
-                st.write("Total data keluhan pemesanan tiket :", len(df_keluhan_pemesanan_tiket))
-                st.dataframe(df_keluhan_pemesanan_tiket.reset_index(drop=True), use_container_width=True)
-
-            with st.expander("Histogram: Keluhan Pemesanan Tiket", expanded=True):
-                # st.write("")
-                keywords = [keyword1, keyword2, keyword3, keyword4, keyword5]
-                df_keluhan_pemesanan_tiket['at'] = pd.to_datetime(df_keluhan_pemesanan_tiket['at'])
-                df_keluhan_pemesanan_tiket['year'] = df_keluhan_pemesanan_tiket['at'].dt.year
-                keluhan_per_tahun = df_keluhan_pemesanan_tiket['content'].str.contains('|'.join(keywords), case=False).groupby(df_keluhan_pemesanan_tiket['year']).sum()
-
-                plt.figure(figsize=(10, 6))
-                bars = plt.bar(keluhan_per_tahun.index, keluhan_per_tahun.values, color='#58508d')
-                plt.xlabel('Tahun')
-                plt.ylabel('Jumlah Keluhan')
-                plt.title('Histogram: Keluhan Pemesanan Tiket')
-                plt.xticks(rotation=45, ha='right')
-                for bar, count in zip(bars, keluhan_per_tahun.values):
-                    height = bar.get_height()
-                    plt.text(bar.get_x() + bar.get_width() / 2, height, count, ha='center', va='bottom', fontsize=10)
-
-                total_per_tahun = keluhan_per_tahun.sum()
-                plt.legend([f'{total_per_tahun} data (keluhan pemesanan tiket)'])
-                plt.tight_layout()
-                st.pyplot(plt)
-
-            with st.expander("Histogram: Kategori Umum dalam Keluhan Pemesanan Tiket", expanded=True):
-                # st.write("")
-                df_keluhan_pemesanan_tiket['count_gagal'] = df_keluhan_pemesanan_tiket['content'].str.findall(r'gagal', flags=re.I).str.len()
-                df_keluhan_pemesanan_tiket['count_sulit'] = df_keluhan_pemesanan_tiket['content'].str.findall(r'sulit', flags=re.I).str.len()
-                df_keluhan_pemesanan_tiket['count_berhasil'] = df_keluhan_pemesanan_tiket['content'].str.findall(r'berhasil', flags=re.I).str.len()
-                df_keluhan_pemesanan_tiket['count_mudah'] = df_keluhan_pemesanan_tiket['content'].str.findall(r'mudah', flags=re.I).str.len()
-                total_gagal = df_keluhan_pemesanan_tiket['count_gagal'].sum()
-                total_sulit = df_keluhan_pemesanan_tiket['count_sulit'].sum()
-                total_berhasil = df_keluhan_pemesanan_tiket['count_berhasil'].sum()
-                total_mudah = df_keluhan_pemesanan_tiket['count_mudah'].sum()
-                total_data = total_gagal + total_berhasil + total_sulit + total_mudah
-                colors = ['#9086b9', '#aca2d0','#c9c0e7','#746aa3']
-                plt.figure(figsize=(8, 6))
-                bars = plt.bar(['Gagal', 'Sulit', 'Berhasil', 'Mudah'], [total_gagal, total_sulit, total_berhasil , total_mudah], color=colors)
-                for bar in bars:
-                    height = bar.get_height()
-                    plt.annotate('{}'.format(height),
-                                 xy=(bar.get_x() + bar.get_width() / 2, height),
-                                 xytext=(0, 3),  # 3 points vertical offset
-                                 textcoords="offset points",
-                                 ha='center', va='bottom', fontsize=10)
-                plt.xlabel('Kategori')
-                plt.ylabel('Jumlah')
-                plt.title('Kategori Umum dalam Keluhan Pemesanan Tiket', size=10)
-                plt.legend([f'Total: {total_data} '])
-                st.pyplot(plt)
-
-        with tabPembayaran:
-            keyword1 = 'pembayaran tiket'
-            keyword2 = 'bayar tiket'
-            keyword3 = 'payment tiket'
-            key1 = df['content'].str.contains(keyword1, case=False)
-            key2 = df['content'].str.contains(keyword2, case=False)
-            key3 = df['content'].str.contains(keyword3, case=False)
-            data_keluhan_pembayaran_tiket = key1 | key2 | key3
-            df_keluhan_pembayaran_tiket = df[data_keluhan_pembayaran_tiket]
-            df_keluhan_pembayaran_tiket = df_keluhan_pembayaran_tiket.drop_duplicates()
-
-            with st.expander("DataFrame", expanded=True):
-                # st.write("")
-                st.write("Total data keluhan pembayaran tiket :", len(df_keluhan_pembayaran_tiket))
-                st.dataframe(df_keluhan_pembayaran_tiket.reset_index(drop=True),use_container_width=True)
-
-            with st.expander("Histogram: Keluhan Pembayaran Tiket", expanded=True):
-                # st.write("")
-                keywords = [keyword1, keyword2, keyword3]
-                df_keluhan_pembayaran_tiket['at'] = pd.to_datetime(df_keluhan_pembayaran_tiket['at'])
-                df_keluhan_pembayaran_tiket['year'] = df_keluhan_pembayaran_tiket['at'].dt.year
-                keluhan_per_tahun = df_keluhan_pembayaran_tiket['content'].str.contains('|'.join(keywords), case=False).groupby(df_keluhan_pembayaran_tiket['year']).sum()
-                plt.figure(figsize=(10, 6))
-                bars = plt.bar(keluhan_per_tahun.index, keluhan_per_tahun.values, color='#ff6361')
-                plt.xlabel('Tahun')
-                plt.ylabel('Jumlah Keluhan')
-                plt.title('Histogram: Keluhan Pembayaran Tiket')
-                plt.xticks(rotation=45, ha='right')
-                for bar, count in zip(bars, keluhan_per_tahun.values):
-                    height = bar.get_height()
-                    plt.text(bar.get_x() + bar.get_width() / 2, height, count, ha='center', va='bottom', fontsize=10)
-                total_per_tahun = keluhan_per_tahun.sum()
-                plt.legend([f'{total_per_tahun} data (keluhan pembayaran tiket)'])
-                plt.tight_layout()
-                st.pyplot(plt)
-
-            with st.expander("Histogram: Kategori Umum dalam Keluhan Pembayaran Tiket", expanded=True):
-                # st.write("")
-                df_keluhan_pembayaran_tiket['count_gagal'] = df_keluhan_pembayaran_tiket['content'].str.findall(r'gagal', flags=re.I).str.len()
-                df_keluhan_pembayaran_tiket['count_berhasil'] = df_keluhan_pembayaran_tiket['content'].str.findall(r'berhasil', flags=re.I).str.len()
-                df_keluhan_pembayaran_tiket['count_sulit'] = df_keluhan_pembayaran_tiket['content'].str.findall(r'sulit', flags=re.I).str.len()
-                df_keluhan_pembayaran_tiket['count_mudah'] = df_keluhan_pembayaran_tiket['content'].str.findall(r'mudah', flags=re.I).str.len()
-                df_keluhan_pembayaran_tiket['count_linkaja'] = df_keluhan_pembayaran_tiket['content'].str.findall(r'linkaja', flags=re.I).str.len()
-                df_keluhan_pembayaran_tiket['count_qris'] = df_keluhan_pembayaran_tiket['content'].str.findall(r'qris', flags=re.I).str.len()
-
-                total_gagal = df_keluhan_pembayaran_tiket['count_gagal'].sum()
-                total_berhasil = df_keluhan_pembayaran_tiket['count_berhasil'].sum()
-                total_sulit = df_keluhan_pembayaran_tiket['count_sulit'].sum()
-                total_mudah = df_keluhan_pembayaran_tiket['count_mudah'].sum()
-                total_linkaja = df_keluhan_pembayaran_tiket['count_linkaja'].sum()
-                total_qris = df_keluhan_pembayaran_tiket['count_qris'].sum()
-                total_data = total_gagal + total_berhasil + total_sulit + total_mudah + total_linkaja + total_qris
-                colors = ['#ff7d76', '#ffaba2','#ffd6d1','#ff6361','#ff6361','#ff948c']
-                plt.figure(figsize=(8, 6))
-                bars = plt.bar(['Gagal','Berhasil','Sulit', 'Mudah', 'LinkAja', 'QRIS'],
-                               [total_gagal, total_berhasil, total_sulit, total_mudah, total_linkaja, total_qris], color=colors)
-                for bar in bars:
-                    height = bar.get_height()
-                    plt.annotate('{}'.format(height),
-                                 xy=(bar.get_x() + bar.get_width() / 2, height),
-                                 xytext=(0, 3),  # 3 points vertical offset
-                                 textcoords="offset points",
-                                 ha='center', va='bottom', fontsize=10)
-                plt.xlabel('Kategori')
-                plt.ylabel('Jumlah')
-                plt.title('Kategori Umum dalam Keluhan Pembayaran Tiket', size=10)
-                plt.legend([f'Total: {total_data} '])
-                st.pyplot(plt)
-
-        with tabHarga:
-            keyword1 = 'harga tiket'
-            keyword2 = 'promo tiket'
-            key1 = df['content'].str.contains(keyword1, case=False)
-            key2 = df['content'].str.contains(keyword2, case=False)
-            data_keluhan_harga_tiket = key1 | key2
-            df_keluhan_harga_tiket = df[data_keluhan_harga_tiket]
-            df_keluhan_harga_tiket = df_keluhan_harga_tiket.drop_duplicates()
-
-            with st.expander("DataFrame", expanded=True):
-                # st.write("")
-                st.write("Total data keluhan harga tiket :", len(df_keluhan_harga_tiket))
-                st.dataframe(df_keluhan_harga_tiket.reset_index(drop=True), use_container_width=True)
-
-            with st.expander("Histogram: Keluhan harga tiket", expanded=True):
-                # st.write("")
-                keywords = [keyword1, keyword2]
-                df_keluhan_harga_tiket['at'] = pd.to_datetime(df_keluhan_harga_tiket['at'])
-                df_keluhan_harga_tiket['year'] = df_keluhan_harga_tiket['at'].dt.year
-                keluhan_per_tahun = df_keluhan_harga_tiket['content'].str.contains('|'.join(keywords), case=False).groupby(df_keluhan_harga_tiket['year']).sum()
-                plt.figure(figsize=(10, 6))
-                bars = plt.bar(keluhan_per_tahun.index, keluhan_per_tahun.values, color='#439981')
-                plt.xlabel('Tahun')
-                plt.ylabel('Jumlah Keluhan')
-                plt.title('Histogram: Keluhan Harga Tiket')
-                plt.xticks(rotation=45, ha='right')
-                for bar, count in zip(bars, keluhan_per_tahun.values):
-                    height = bar.get_height()
-                    plt.text(bar.get_x() + bar.get_width() / 2, height, count, ha='center', va='bottom', fontsize=10)
-                total_per_tahun = keluhan_per_tahun.sum()
-                plt.legend([f'{total_per_tahun} data (keluhan harga tiket)'])
-                plt.tight_layout()
-                st.pyplot(plt)
-
-            with st.expander("Histogram: Kategori Umum dalam Keluhan Harga Tiket", expanded=True):
-                # st.write("")
-                df_keluhan_harga_tiket['count_mahal'] = df_keluhan_harga_tiket['content'].str.findall(r'mahal', flags=re.I).str.len()
-                df_keluhan_harga_tiket['count_murah'] = df_keluhan_harga_tiket['content'].str.findall(r'murah', flags=re.I).str.len()
-                df_keluhan_harga_tiket['count_promo'] = df_keluhan_harga_tiket['content'].str.findall(r'promo', flags=re.I).str.len()
-                total_mahal = df_keluhan_harga_tiket['count_mahal'].sum()
-                total_murah = df_keluhan_harga_tiket['count_murah'].sum()
-                total_promo = df_keluhan_harga_tiket['count_promo'].sum()
-                total_data = total_mahal + total_murah + total_promo
-                colors = ['#439981', '#5ca992','#74baa4']
-                plt.figure(figsize=(8, 6))
-                bars = plt.bar(['Mahal','Murah','Promo'], [total_mahal, total_murah, total_promo], color=colors)
-                for bar in bars:
-                    height = bar.get_height()
-                    plt.annotate('{}'.format(height),
-                                 xy=(bar.get_x() + bar.get_width() / 2, height),
-                                 xytext=(0, 3),  # 3 points vertical offset
-                                 textcoords="offset points",
-                                 ha='center', va='bottom', fontsize=10)
-
-                plt.xlabel('Kategori')
-                plt.ylabel('Jumlah')
-                plt.title('Kategori Umum dalam Keluhan Harga Tiket', size=10)
-                plt.legend([f'Total: {total_data} '])
-                st.pyplot(plt)
-
+        total_sizes = sum(sizes)
+        fig, ax = plt.subplots(figsize=(4, 4), facecolor='none')
+        wedgeprops = {'width': 0.7, 'edgecolor': 'white', 'linewidth': 1}
+        pie = ax.pie(x=sizes, 
+                     # labels=labels, 
+                     colors=colors, explode=explode,
+                     autopct=lambda pct: "\n{:.1f}%\n".format(pct),
+                     textprops={'fontsize': 10, 'color': 'black'}, shadow=True,
+                     wedgeprops=wedgeprops)
+        ax.legend(pie[0], labels, loc='center left', fontsize=8)
+        ax.set_title('(Keluhan Pengguna KAI Access)', fontsize=10, color='white', pad=1)
+        ax.set_facecolor('none')
+        with st.expander("Pie Chart", expanded=True):
+            st.pyplot(fig)
+            
         st.divider()                
 
         # 2. Data Cleaning
