@@ -162,7 +162,7 @@ def admin_report_page():
         df_keluhan_pemesanan_tiket = df_keluhan_pemesanan_tiket[['content','label','at']]
         with st.expander("DataFrame", expanded=True):
             # st.write("Total data keluhan pemesanan tiket :", len(df_keluhan_pemesanan_tiket))
-            st.dataframe(df_keluhan_pemesanan_tiket.reset_index(drop=True), use_container_width=True)
+            st.dataframe(df_keluhan_pemesanan_tiket.reset_index(drop=True), use_container_width=True,hide_index=True)
             pelayanan_df = df_keluhan_pemesanan_tiket.reset_index(drop=True)
 
     elif select_option == "Pembayaran Tiket":
@@ -176,7 +176,7 @@ def admin_report_page():
         df_keluhan_pembayaran_tiket = df_keluhan_pembayaran_tiket[['content','label','at']]
         with st.expander("DataFrame", expanded=True):
             # st.write("Total data keluhan pembayaran tiket :", len(df_keluhan_pembayaran_tiket))
-            st.dataframe(df_keluhan_pembayaran_tiket.reset_index(drop=True),use_container_width=True)
+            st.dataframe(df_keluhan_pembayaran_tiket.reset_index(drop=True),use_container_width=True,hide_index=True)
             pelayanan_df = df_keluhan_pembayaran_tiket.reset_index(drop=True)
 
     elif select_option == "Harga Tiket":
@@ -191,7 +191,7 @@ def admin_report_page():
         with st.expander("DataFrame", expanded=True):
             # st.write("")
             # st.write("Total data keluhan harga tiket :", len(df_keluhan_harga_tiket))
-            st.dataframe(df_keluhan_harga_tiket.reset_index(drop=True), use_container_width=True)
+            st.dataframe(df_keluhan_harga_tiket.reset_index(drop=True), use_container_width=True,hide_index=True)
             pelayanan_df = df_keluhan_harga_tiket.reset_index(drop=True)
             
     # Menghitung jumlah data berdasarkan kata kunci
@@ -259,8 +259,8 @@ def admin_report_page():
             df_query = df_query[['content','label','at']]
             with st.expander("DataFrame", expanded=True):
                 st.write(f"Hasil Query : {keyword_input}")
-                st.write("Total : ", len(df_query))
-                st.dataframe(df_query.reset_index(drop=True), use_container_width=True)
+                # st.write("Total : ", len(df_query))
+                st.dataframe(df_query.reset_index(drop=True), use_container_width=True,hide_index=True)
                 query_df = df_query.reset_index(drop=True)
                 
             with st.sidebar:
