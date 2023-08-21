@@ -81,32 +81,72 @@ def analysis_page():
         st.write("\n\n")
         st.markdown("Analisis Keluhan Pengguna :")
         st.markdown("_Dilakukan analisis keluhan pengguna terkait pemesanan, pembayaran, serta harga tiket._")
-        
         # Menghitung jumlah data berdasarkan kata kunci
         pesan_tiket_count = df[df['content'].str.contains('pesan tiket', case=False)].shape[0]
         bayar_tiket_count = df[df['content'].str.contains('bayar tiket', case=False)].shape[0]
         harga_tiket_count = df[df['content'].str.contains('harga tiket', case=False)].shape[0]
 
+        # Menghitung persentase berdasarkan jumlah data yang telah diubah (6000 data)
+        total_data = 6000
+        pesan_tiket_percentage = (pesan_tiket_count / total_data) * 100
+        bayar_tiket_percentage = (bayar_tiket_count / total_data) * 100
+        harga_tiket_percentage = (harga_tiket_count / total_data) * 100
+
         # Membuat Pie Chart
         labels = ['Pemesanan Tiket', 'Pembayaran Tiket', 'Harga Tiket']
-        sizes = [pesan_tiket_count, bayar_tiket_count, harga_tiket_count]
+        sizes = [pesan_tiket_percentage, bayar_tiket_percentage, harga_tiket_percentage]
         colors = ['#aca2d0', '#ff948c', '#5ca992']
         explode = (0.1, 0.1, 0)
 
-        total_sizes = sum(sizes)
+        total_sizes = total_data  # Total data yang telah diubah
         fig, ax = plt.subplots(figsize=(4, 4), facecolor='none')
         wedgeprops = {'width': 0.7, 'edgecolor': 'white', 'linewidth': 1}
-        pie = ax.pie(x=sizes, 
-                     # labels=labels, 
+        pie = ax.pie(x=sizes,
+                     labels=['', '', ''],  # Labels diatur ke kosong
                      colors=colors, explode=explode,
-                     autopct=lambda pct: "\n{:.1f}%\n".format(pct),
-                     textprops={'fontsize': 10, 'color': 'black'}, shadow=True,
+                     autopct=lambda pct: "{:.1f}%\n({})".format(pct, int(pct/100*total_sizes)),
+                     textprops={'fontsize': 7, 'color': 'black'}, shadow=True,
                      wedgeprops=wedgeprops)
         ax.legend(pie[0], labels, loc='center left', fontsize=8)
         ax.set_title('(Keluhan Pengguna KAI Access)', fontsize=10, color='white', pad=1)
         ax.set_facecolor('none')
+
+        # Menampilkan total data di bawah pie chart
+        total_data_text = f"Total Data: {total_sizes}"
+        st.markdown(total_data_text)
+
         with st.expander("Pie Chart", expanded=True):
-            st.pyplot(fig)
+            st.pyplot(fig)        
+        # ----
+#         st.markdown("Analisis Keluhan Pengguna :")
+#         st.markdown("_Dilakukan analisis keluhan pengguna terkait pemesanan, pembayaran, serta harga tiket._")
+        
+#         # Menghitung jumlah data berdasarkan kata kunci
+#         pesan_tiket_count = df[df['content'].str.contains('pesan tiket', case=False)].shape[0]
+#         bayar_tiket_count = df[df['content'].str.contains('bayar tiket', case=False)].shape[0]
+#         harga_tiket_count = df[df['content'].str.contains('harga tiket', case=False)].shape[0]
+
+#         # Membuat Pie Chart
+#         labels = ['Pemesanan Tiket', 'Pembayaran Tiket', 'Harga Tiket']
+#         sizes = [pesan_tiket_count, bayar_tiket_count, harga_tiket_count]
+#         colors = ['#aca2d0', '#ff948c', '#5ca992']
+#         explode = (0.1, 0.1, 0)
+
+#         total_sizes = sum(sizes)
+#         fig, ax = plt.subplots(figsize=(4, 4), facecolor='none')
+#         wedgeprops = {'width': 0.7, 'edgecolor': 'white', 'linewidth': 1}
+#         pie = ax.pie(x=sizes, 
+#                      # labels=labels, 
+#                      colors=colors, explode=explode,
+#                      autopct=lambda pct: "\n{:.1f}%\n".format(pct),
+#                      textprops={'fontsize': 10, 'color': 'black'}, shadow=True,
+#                      wedgeprops=wedgeprops)
+#         ax.legend(pie[0], labels, loc='center left', fontsize=8)
+#         ax.set_title('(Keluhan Pengguna KAI Access)', fontsize=10, color='white', pad=1)
+#         ax.set_facecolor('none')
+#         with st.expander("Pie Chart", expanded=True):
+#             st.pyplot(fig)
+        # ----
         
 #         tabPemesanan, tabPembayaran, tabHarga= st.tabs([
 #             "&nbsp;&nbsp;&nbsp; **Pemesanan Tiket** &nbsp;&nbsp;&nbsp;",
